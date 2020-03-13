@@ -3,6 +3,7 @@ import model.transformer.Modules
 import model.transformer.Layers
 import model.transformer.SubLayers
 import model.Model
+import model.transformer.Decoder
 import model.transformer.Translator
 import model.transformer.Beam
 import model.transformer.Optim

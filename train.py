@@ -33,20 +33,28 @@ def train(loader, model, optimizer, tokenizer, opt):
 
             # Batch * length * 1024
             fc_feats = data['fc_feats'].cuda()
-            gt_answers = data['gt_answer']
-            ca_answer1 = data['ca_answer1']
-            ca_answer2 = data['ca_answer2']
-            ca_answer3 = data['ca_answer3']
+            target = data['target'].cuda()
+            question = data['question']
+            question = tokenize_text(tokenizer,question).cuda()
+            
+            prob = model(fc_feats,question)
+            
+            
+#             gt_answers = data['gt_answer']
+#             ca_answer1 = data['ca_answer1']
+#             ca_answer2 = data['ca_answer2']
+#             ca_answer3 = data['ca_answer3']
 
             # Pre-process the captions using BERT tokenizer
-            gt_tokens = tokenize_text(tokenizer, gt_answers).cuda()
-            ca_tokens1 = tokenize_text(tokenizer, ca_answer1).cuda()
-            ca_tokens2 = tokenize_text(tokenizer, ca_answer2).cuda()
-            ca_tokens3 = tokenize_text(tokenizer, ca_answer3).cuda()
+#             gt_tokens = tokenize_text(tokenizer, gt_answers).cuda()
+#             ca_tokens1 = tokenize_text(tokenizer, ca_answer1).cuda()
+#             ca_tokens2 = tokenize_text(tokenizer, ca_answer2).cuda()
+#             ca_tokens3 = tokenize_text(tokenizer, ca_answer3).cuda()
 
             # Feed into the model for training
-            prob, labels = model(fc_feats, gt_tokens, ca_tokens1, ca_tokens2, ca_tokens3)
-            loss = torch.nn.functional.binary_cross_entropy_with_logits(prob, labels)
+#             prob, labels = model(fc_feats, gt_tokens, ca_tokens1, ca_tokens2, ca_tokens3)
+
+            loss = torch.nn.functional.binary_cross_entropy_with_logits(prob.squeeze(1), target)
 
             # Backward loss and clip gradient
             loss.backward()

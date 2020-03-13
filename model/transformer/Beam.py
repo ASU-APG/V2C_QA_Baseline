@@ -6,7 +6,7 @@
 """
 
 import torch
-import model.transformer.Constants as Constants
+from model.transformer import Constants 
 
 
 class Beam():

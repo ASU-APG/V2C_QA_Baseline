@@ -26,14 +26,27 @@ def parse_opt():
     parser.add_argument(
         '--v2c_qa_json',
         type=str,
-        default='data/v2cqa_v1_train.json',
+        default='data/train_v2cqa.json',
+        help='path to the json file containing V2C-QA task.')
+    
+    parser.add_argument(
+        '--v2c_qa_val_json',
+        type=str,
+        default='data/val_v2cqa.json',
+        help='path to the json file containing V2C-QA task.')
+    
+    parser.add_argument(
+        '--labels',
+        type=str,
+        default='data/set_all_cms.json',
         help='path to the json file containing V2C-QA task.')
 
     parser.add_argument(
         '--feats_dir',
         nargs='*',
         type=str,
-        default='data/feats/resnet152/',
+#         default='data/feats/resnet152/',
+        default='/scratch/tgokhale/resnet152/',
         help='path to the directory containing the preprocessed fc feats')
 
     # Model settings
@@ -115,10 +128,10 @@ def parse_opt():
 
     # Optimization: General
     parser.add_argument(
-        '--epochs', type=int, default=600, help='number of epochs')
+        '--epochs', type=int, default=200, help='number of epochs')
 
     parser.add_argument(
-        '--warm_up_steps', type=int, default=5000, help='Warm up steps.')
+        '--warm_up_steps', type=int, default=1000, help='Warm up steps.')
 
     parser.add_argument(
         '--batch_size', type=int, default=48, help='minibatch size')
@@ -143,7 +156,54 @@ def parse_opt():
 
     parser.add_argument(
         '--gpu', type=str, default='0', help='gpu device number')
+    
+    
+    parser.add_argument(
+        '--gpus',
+        type=int,
+        default=2,
+        help='how many gpus'
+    )
+    parser.add_argument(
+        '--distributed_backend',
+        type=str,
+        default='dp',
+        help='supports three options dp, ddp, ddp2'
+    )
+    
+    parser.add_argument(
+        '--use_16bit',
+        dest='use_16bit',
+        action='store_true',
+        help='if true uses 16 bit precision'
+    )
+    
+    parser.add_argument(
+        '--use_captions',
+        dest='use_captions',
+        action='store_true',
+        help='if to use captions'
+    )
+    
+    parser.add_argument(
+        '--use_pretrained',
+        dest='use_pretrained',
+        action='store_true',
+        help='if to use pretrained model'
+    )
+    
+    parser.add_argument('--seed', type=int, default=42,
+                            help='seed for initializing training. ')
+    
+    parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
+                               help='evaluate model on validation set')
+    
+    parser.add_argument("--learning_rate", default=5e-5, type=float,
+                        help="The initial learning rate for Adam.")
+    
+    parser.add_argument("--weight_decay", default=0.0, type=float,
+                        help="Weight deay if we apply some.")
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    return args
+    return parser

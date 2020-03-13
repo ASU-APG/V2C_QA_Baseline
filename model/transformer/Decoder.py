@@ -1,13 +1,24 @@
 import torch
 import torch.nn as nn
 import numpy as np
-import model.transformer.Constants as Constants
+# from model.transformer.Constants as Constants
 from model.transformer.Layers import DecoderLayer
+
+PAD = 0
+UNK = 1
+BOS = 2
+EOS = 3
+SEP = 4
+
+CAP_PAD = 0
+CAP_UNK = 1
+CAP_BOS = 2
+CAP_EOS = 3
 
 
 def get_non_pad_mask(seq):
     assert seq.dim() == 2
-    return seq.ne(Constants.PAD).type(torch.float).unsqueeze(-1).cuda()
+    return seq.ne(PAD).type(torch.float).unsqueeze(-1).cuda()
 
 
 def get_attn_key_pad_mask(seq_k, seq_q):
@@ -15,7 +26,7 @@ def get_attn_key_pad_mask(seq_k, seq_q):
 
     # Expand to fit the shape of key query attention matrix.
     len_q = seq_q.size(1)
-    padding_mask = seq_k.eq(Constants.PAD)
+    padding_mask = seq_k.eq(PAD)
     padding_mask = padding_mask.unsqueeze(1).expand(-1, len_q, -1)  # b x lq x lk
 
     return padding_mask.cuda()
@@ -65,7 +76,7 @@ class Decoder(nn.Module):
         n_position = len_max_seq + 1
 
         self.tgt_word_emb = nn.Embedding(
-            n_tgt_vocab, d_word_vec, padding_idx=Constants.PAD)
+            n_tgt_vocab, d_word_vec, padding_idx=PAD)
 
         self.position_enc = nn.Embedding.from_pretrained(
             get_sinusoid_encoding_table(n_position, d_word_vec, padding_idx=0),
